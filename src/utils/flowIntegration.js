@@ -29,7 +29,7 @@ export const checkFlowBalance = async (address) => {
           let account = getAccount(address)
           
           let vaultRef = account.getCapability(/public/flowTokenBalance)
-                              .borrow<&FlowToken.Vault{FlowToken.Balance}>()
+                              .borrow<&FlowToken.Vault>()
           
           if vaultRef == nil {
             log("Vault reference is nil")
