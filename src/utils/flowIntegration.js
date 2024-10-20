@@ -42,16 +42,29 @@ export const checkFlowBalance = async (address) => {
       `,
       args: (arg, t) => [arg(address, t.Address)]
     });
-    console.log("Query result:", result);
+    console.log("Raw query result:", result);
     
+    if (result === null || result === undefined) {
+      console.error("Query result is null or undefined");
+      return 0.0;
+    }
+
     if (typeof result === 'string') {
       console.log("Parsing balance from string:", result);
-      return parseFloat(result);
+      const parsedBalance = parseFloat(result);
+      if (isNaN(parsedBalance)) {
+        console.error("Failed to parse balance from string:", result);
+        return 0.0;
+      }
+      return parsedBalance;
     } else if (typeof result === 'number') {
-      console.log("Balance is already a number:", result);
+      console.log("Balance is a number:", result);
       return result;
+    } else if (typeof result === 'object' && result.type === 'UFix64') {
+      console.log("Balance is a UFix64 object:", result);
+      return parseFloat(result.value);
     } else {
-      console.error("Unexpected balance type:", typeof result);
+      console.error("Unexpected balance type:", typeof result, result);
       return 0.0;
     }
   } catch (error) {
