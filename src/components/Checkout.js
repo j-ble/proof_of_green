@@ -4,7 +4,9 @@ import { initializeCircleWallet, getCircleWalletBalance, createCirclePayment, in
 
 import { makePayment } from '../proof_of_green/src/ProofOfGreenIntegration';
 
+// Checkout component that handles the payment process
 const Checkout = ({ cart }) => {
+  // State variables for managing payment method, user info, and UI states
   const [paymentMethod, setPaymentMethod] = useState('');
   const [flowUser, setFlowUser] = useState(null);
   const [flowBalance, setFlowBalance] = useState(null);
@@ -15,8 +17,8 @@ const Checkout = ({ cart }) => {
   const [destinationChain, setDestinationChain] = useState('ETH');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [error, setError] = useState(null);
 
+  // Effect to check and set the current Flow user when the component mounts
   useEffect(() => {
     const checkUser = async () => {
       const user = await getCurrentUser();
@@ -25,18 +27,21 @@ const Checkout = ({ cart }) => {
     checkUser();
   }, []);
 
+  // Effect to check Flow balance when the user changes
   useEffect(() => {
     if (flowUser && flowUser.addr) {
       checkFlowBalance(flowUser.addr).then(setFlowBalance);
     }
   }, [flowUser]);
 
+  // Effect to fetch Circle balance when the wallet changes
   useEffect(() => {
     if (circleWallet) {
       fetchCircleBalance();
     }
   }, [circleWallet]);
 
+  // Function to fetch Circle wallet balance
   const fetchCircleBalance = async () => {
     try {
       const balance = await getCircleWalletBalance(circleWallet.id);
@@ -47,44 +52,7 @@ const Checkout = ({ cart }) => {
     }
   };
 
-  const handlePayment = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const totalAmount = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-      const recipientAddress = "0x1234567890abcdef"; // Replace with the actual recipient address
-      await makePayment(totalAmount.toFixed(8), recipientAddress);
-      // Handle successful payment (e.g., clear cart, show success message)
-    } catch (error) {
-      console.error("Payment error:", error);
-      setError("Payment failed. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleFlowLogin = async () => {
-    try {
-      await initializeFlow();
-      const user = await getCurrentUser();
-      setFlowUser(user);
-    } catch (error) {
-      console.error("Error logging in to Flow:", error);
-      setError("Failed to log in to Flow. Please try again.");
-    }
-  };
-
-  const handleFlowLogout = async () => {
-    try {
-      await logOut();
-      setFlowUser(null);
-      setFlowBalance(null);
-    } catch (error) {
-      console.error("Error logging out from Flow:", error);
-      setError("Failed to log out from Flow. Please try again.");
-    }
-  };
-
+  // Function to handle the payment process
   const handlePayment = async () => {
     setIsLoading(true);
     setError(null);
@@ -146,6 +114,31 @@ const Checkout = ({ cart }) => {
     }
   };
 
+  // Function to handle Flow login
+  const handleFlowLogin = async () => {
+    try {
+      await initializeFlow();
+      const user = await getCurrentUser();
+      setFlowUser(user);
+    } catch (error) {
+      console.error("Error logging in to Flow:", error);
+      setError("Failed to log in to Flow. Please try again.");
+    }
+  };
+
+  // Function to handle Flow logout
+  const handleFlowLogout = async () => {
+    try {
+      await logOut();
+      setFlowUser(null);
+      setFlowBalance(null);
+    } catch (error) {
+      console.error("Error logging out from Flow:", error);
+      setError("Failed to log out from Flow. Please try again.");
+    }
+  };
+
+  // Function to connect Circle wallet
   const connectCircleWallet = async () => {
     setIsLoading(true);
     setError(null);
@@ -162,11 +155,14 @@ const Checkout = ({ cart }) => {
     }
   };
 
+  // Calculate total cart value
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
+  // Render the checkout component
   return (
     <div className="checkout">
       <h2>Checkout</h2>
+      {/* Cart summary */}
       <div className="cart-summary">
         {cart.map(item => (
           <div key={item.id}>
@@ -176,6 +172,7 @@ const Checkout = ({ cart }) => {
         ))}
         <p><strong>Total: ${total.toFixed(2)}</strong></p>
       </div>
+      {/* Payment method selection */}
       <div className="payment-options">
         <h3>Select Payment Method</h3>
         <select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
@@ -184,6 +181,7 @@ const Checkout = ({ cart }) => {
           <option value="circle">Pay with USDC or other cryptocurrencies via Circle</option>
         </select>
       </div>
+      {/* Flow wallet section */}
       {paymentMethod === 'flow' && (
         <div className="flow-wallet-section">
           {flowUser ? (
@@ -197,6 +195,7 @@ const Checkout = ({ cart }) => {
           )}
         </div>
       )}
+      {/* Circle wallet section */}
       {paymentMethod === 'circle' && (
         <div className="circle-wallet-section">
           {circleWallet ? (
@@ -240,7 +239,9 @@ const Checkout = ({ cart }) => {
           )}
         </div>
       )}
+      {/* Error message display */}
       {error && <p className="error">{error}</p>}
+      {/* Payment button */}
       <button 
         onClick={handlePayment} 
         disabled={isLoading || !paymentMethod || (paymentMethod === 'flow' && !flowUser) || (paymentMethod === 'circle' && !circleWallet)}
