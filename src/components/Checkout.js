@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { initializeFlow, checkFlowBalance, executeFlowPayment, getCurrentUser, logOut } from '../utils/flowIntegration';
 import { initializeCircleWallet, getCircleWalletBalance, createCirclePayment, initiateCrossChainTransfer } from '../utils/circleIntegration';
 
+import { makePayment } from '../proof_of_green/src/ProofOfGreenIntegration';
+
 const Checkout = ({ cart }) => {
   const [paymentMethod, setPaymentMethod] = useState('');
   const [flowUser, setFlowUser] = useState(null);
@@ -12,6 +14,7 @@ const Checkout = ({ cart }) => {
   const [sourceChain, setSourceChain] = useState('ETH');
   const [destinationChain, setDestinationChain] = useState('ETH');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -41,6 +44,22 @@ const Checkout = ({ cart }) => {
     } catch (error) {
       console.error("Error fetching Circle balance:", error);
       setError("Failed to fetch Circle wallet balance. Please try again.");
+    }
+  };
+
+  const handlePayment = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const totalAmount = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+      const recipientAddress = "0x1234567890abcdef"; // Replace with the actual recipient address
+      await makePayment(totalAmount.toFixed(8), recipientAddress);
+      // Handle successful payment (e.g., clear cart, show success message)
+    } catch (error) {
+      console.error("Payment error:", error);
+      setError("Payment failed. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
