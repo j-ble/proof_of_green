@@ -3,10 +3,10 @@ import Product from './Product';
 
 const ProductList = ({ addToCart }) => {
   const products = [
-    { id: 1, name: 'OG Kush', type: 'Bud', rating: 4.5, price: 15.99, image: 'https://via.placeholder.com/150' },
-    { id: 2, name: 'Sour Diesel', type: 'Bud', rating: 4.3, price: 14.99, image: 'https://via.placeholder.com/150' },
-    { id: 3, name: 'Gummy Bears', type: 'Edible', rating: 4.7, price: 19.99, image: 'https://via.placeholder.com/150' },
-    { id: 4, name: 'CBD Oil', type: 'Oil', rating: 4.8, price: 29.99, image: 'https://via.placeholder.com/150' },
+    { id: 1, name: 'OG Kush', type: 'Bud', rating: 4.5, price: 15.99, image: '/images/1.png' },
+    { id: 2, name: 'Sour Diesel', type: 'Bud', rating: 4.3, price: 14.99, image: '/images/2.png' },
+    { id: 3, name: 'Gummy Bears', type: 'Edible', rating: 4.7, price: 19.99, image: '/images/3.png' },
+    { id: 4, name: 'CBD Oil', type: 'Oil', rating: 4.8, price: 29.99, image: '/images/4.png' },
   ];
 
   return (

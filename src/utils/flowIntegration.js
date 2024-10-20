@@ -8,6 +8,7 @@ fcl.config({
   "discovery.wallet": "https://fcl-discovery.onflow.org/testnet/authn",
   "0xFlowToken": "0x7e60df042a9c0868", // FlowToken on Testnet
   "0xTakeFlow": "0x01cf0e2f2f715450", // Replace with your actual contract address
+  "0xFungibleToken": "0x9a0766d93b6608b7", // FungibleToken on Testnet
 })
 
 // Contract addresses are now accessed via fcl.config().get()
@@ -23,23 +24,23 @@ export const checkFlowBalance = async (address) => {
     console.log("Checking balance for address:", address);
     const result = await fcl.query({
       cadence: `
-        import FlowToken from 0xFlowToken
+       
+    import FungibleToken from 0xFungibleToken
+import FlowToken from 0xFlowToken
 
-        fun main(address: Address): UFix64 {
-          let account = getAccount(address)
-          
-          let vaultRef = account.getCapability(/public/flowTokenBalance)
-                              .borrow<&FlowToken.Vault>()
-          
-          if vaultRef == nil {
-            log("Vault reference is nil")
-            return 0.0
-          }
-          
-          let balance = vaultRef.balance
-          log("Balance: " + balance.toString())
-          return balance
-        }
+access(all) fun main(address: Address): UFix64 {
+    // Get the account's FlowToken vault capability
+    let account = getAccount(address)
+
+    let vaultRef = account.capabilities.borrow<&FlowToken.Vault>(
+        /public/flowTokenBalance
+    ) ?? panic("Could not borrow reference to the FlowToken vault")
+
+    // Return the balance
+    return vaultRef.balance
+}
+
+
       `,
       args: (arg, t) => [arg(address, t.Address)]
     });
@@ -47,30 +48,15 @@ export const checkFlowBalance = async (address) => {
     
     if (result === null || result === undefined) {
       console.error("Query result is null or undefined");
-      return 0.0;
+      return "0.00000000";
     }
 
-    if (typeof result === 'string') {
-      console.log("Parsing balance from string:", result);
-      const parsedBalance = parseFloat(result);
-      if (isNaN(parsedBalance)) {
-        console.error("Failed to parse balance from string:", result);
-        return 0.0;
-      }
-      return parsedBalance;
-    } else if (typeof result === 'number') {
-      console.log("Balance is a number:", result);
-      return result;
-    } else if (typeof result === 'object' && result.type === 'UFix64') {
-      console.log("Balance is a UFix64 object:", result);
-      return parseFloat(result.value);
-    } else {
-      console.error("Unexpected balance type:", typeof result, result);
-      return 0.0;
-    }
+    // Convert the result to a number and format it with 8 decimal places
+    const balance = parseFloat(result);
+    return balance.toFixed(8);
   } catch (error) {
     console.error("Error checking Flow balance:", error);
-    return 0.0;
+    return "0.00000000";
   }
 };
 

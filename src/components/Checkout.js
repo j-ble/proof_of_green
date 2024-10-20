@@ -30,7 +30,9 @@ const Checkout = ({ cart }) => {
   // Effect to check Flow balance when the user changes
   useEffect(() => {
     if (flowUser && flowUser.addr) {
-      checkFlowBalance(flowUser.addr).then(setFlowBalance);
+      checkFlowBalance(flowUser.addr).then(balance => {
+        setFlowBalance(balance);
+      });
     }
   }, [flowUser]);
 
