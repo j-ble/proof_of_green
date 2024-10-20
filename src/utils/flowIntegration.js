@@ -1,15 +1,16 @@
 import * as fcl from "@onflow/fcl";
 
 // Configure FCL
-fcl.config()
-  .put("app.detail.title", "Cannabis E-commerce")
-  .put("app.detail.icon", "https://placekitten.com/g/200/200")
-  .put("accessNode.api", "https://rest-testnet.onflow.org")
-  .put("discovery.wallet", "https://fcl-discovery.onflow.org/testnet/authn");
+fcl.config({
+  "app.detail.title": "Cannabis E-commerce",
+  "app.detail.icon": "https://placekitten.com/g/200/200",
+  "accessNode.api": "https://rest-testnet.onflow.org",
+  "discovery.wallet": "https://fcl-discovery.onflow.org/testnet/authn",
+  "0xFlowToken": "0x7e60df042a9c0868", // FlowToken on Testnet
+  "0xTakeFlow": "0x01cf0e2f2f715450", // Replace with your actual contract address
+})
 
-// Correct contract addresses for Flow testnet
-const FLOW_TOKEN_ADDRESS = "0x7e60df042a9c0868";  // FlowToken on Testnet
-const TAKE_FLOW_ADDRESS = "0x01cf0e2f2f715450";  // Replace with your actual contract address
+// Contract addresses are now accessed via fcl.config().get()
 
 // Function to initialize Flow authentication
 export const initializeFlow = () => {
@@ -22,9 +23,9 @@ export const checkFlowBalance = async (address) => {
     console.log("Checking balance for address:", address);
     const result = await fcl.query({
       cadence: `
-        import FlowToken from ${FLOW_TOKEN_ADDRESS}
+        import FlowToken from 0xFlowToken
 
-        fun main(address: Address): UFix64 {
+        pub fun main(address: Address): UFix64 {
           let account = getAccount(address)
           
           let vaultRef = account.getCapability(/public/flowTokenBalance)
@@ -78,8 +79,8 @@ export const executeFlowPayment = async (amount) => {
   try {
     const transactionId = await fcl.mutate({
       cadence: `
-        import FlowToken from ${FLOW_TOKEN_ADDRESS}
-        import TakeFlow from ${TAKE_FLOW_ADDRESS}
+        import FlowToken from 0xFlowToken
+        import TakeFlow from 0xTakeFlow
 
         transaction(amount: UFix64) {
             prepare(signer: AuthAccount) {
