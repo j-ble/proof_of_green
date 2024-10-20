@@ -20,7 +20,7 @@ export const initializeFlow = () => {
 export const checkFlowBalance = async (address) => {
   try {
     console.log("Checking balance for address:", address);
-    const balance = await fcl.query({
+    const result = await fcl.query({
       cadence: `
         import FlowToken from ${FLOW_TOKEN_ADDRESS}
 
@@ -31,16 +31,29 @@ export const checkFlowBalance = async (address) => {
                               .borrow<&FlowToken.Vault{FlowToken.Balance}>()
           
           if vaultRef == nil {
+            log("Vault reference is nil")
             return 0.0
           }
           
-          return vaultRef!.balance
+          let balance = vaultRef!.balance
+          log("Balance: " + balance.toString())
+          return balance
         }
       `,
       args: (arg, t) => [arg(address, t.Address)]
     });
-    console.log("Balance fetched:", balance);
-    return parseFloat(balance);
+    console.log("Query result:", result);
+    
+    if (typeof result === 'string') {
+      console.log("Parsing balance from string:", result);
+      return parseFloat(result);
+    } else if (typeof result === 'number') {
+      console.log("Balance is already a number:", result);
+      return result;
+    } else {
+      console.error("Unexpected balance type:", typeof result);
+      return 0.0;
+    }
   } catch (error) {
     console.error("Error checking Flow balance:", error);
     return 0.0;
