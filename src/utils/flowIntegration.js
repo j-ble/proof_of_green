@@ -24,15 +24,13 @@ export const checkFlowBalance = async (address) => {
       cadence: `
         import FlowToken from ${FLOW_TOKEN_ADDRESS}
 
-        fun main(address: Address): UFix64 {
+        pub fun main(address: Address): UFix64 {
           let account = getAccount(address)
           
-          if let vaultRef = account.getCapability(/public/flowTokenBalance)
-                              .borrow<&FlowToken.Vault{FlowToken.Balance}>() {
-            return vaultRef.balance
-          }
+          let vaultRef = account.getCapability(/public/flowTokenBalance)
+                              .borrow<&FlowToken.Vault{FlowToken.Balance}>()
           
-          return 0.0
+          return vaultRef?.balance ?? 0.0
         }
       `,
       args: (arg, t) => [arg(address, t.Address)]
