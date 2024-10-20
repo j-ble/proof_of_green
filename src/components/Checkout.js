@@ -241,7 +241,11 @@ const Checkout = ({ cart }) => {
         </div>
       )}
       {error && <p className="error">{error}</p>}
-      <button onClick={handlePayment} disabled={isLoading || !paymentMethod || (paymentMethod === 'flow' && !flowUser) || (paymentMethod === 'circle' && !circleWallet)}>
+      <button 
+        onClick={handlePayment} 
+        disabled={isLoading || !paymentMethod || (paymentMethod === 'flow' && !flowUser) || (paymentMethod === 'circle' && !circleWallet)}
+        className="bg-green-500 text-white px-4 py-2 rounded"
+      >
         {isLoading ? 'Processing...' : 'Complete Payment'}
       </button>
     </div>
