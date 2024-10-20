@@ -24,18 +24,18 @@ export const checkFlowBalance = async (address) => {
       cadence: `
         import FlowToken from ${FLOW_TOKEN_ADDRESS}
 
-        pub fun main(address: Address): UFix64 {
+        fun main(address: Address): UFix64 {
           let account = getAccount(address)
           
           let vaultRef = account.getCapability(/public/flowTokenBalance)
-                              .borrow<&FlowToken.Vault{FlowToken.Balance}>()
+                              .borrow<&FlowToken.Vault>()
           
           if vaultRef == nil {
             log("Vault reference is nil")
             return 0.0
           }
           
-          let balance = vaultRef!.balance
+          let balance = vaultRef.balance
           log("Balance: " + balance.toString())
           return balance
         }
