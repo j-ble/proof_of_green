@@ -30,16 +30,20 @@ export const checkFlowBalance = async (address) => {
           let vaultRef = account.getCapability(/public/flowTokenBalance)
                               .borrow<&FlowToken.Vault{FlowToken.Balance}>()
           
-          return vaultRef?.balance ?? 0.0
+          if vaultRef == nil {
+            return 0.0
+          }
+          
+          return vaultRef!.balance
         }
       `,
       args: (arg, t) => [arg(address, t.Address)]
     });
     console.log("Balance fetched:", balance);
-    return balance;
+    return parseFloat(balance);
   } catch (error) {
     console.error("Error checking Flow balance:", error);
-    throw new Error(`Failed to fetch FLOW balance: ${error.message}`);
+    return 0.0;
   }
 };
 
