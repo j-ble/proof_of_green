@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { initializeFlow, checkFlowBalance, executeFlowPayment, getCurrentUser, logOut } from '../utils/flowIntegration';
 import { initializeCircleWallet, getCircleWalletBalance, createCirclePayment, initiateCrossChainTransfer } from '../utils/circleIntegration';
 
-import { makePayment } from '../../proof_of_green/src/ProofOfGreenIntegration';
+import { makePayment } from './ProofOfGreenIntegration';
 
 // Checkout component that handles the payment process
 const Checkout = ({ cart }) => {
