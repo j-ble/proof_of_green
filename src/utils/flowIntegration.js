@@ -24,7 +24,7 @@ export const checkFlowBalance = async (address) => {
       cadence: `
         import FlowToken from ${FLOW_TOKEN_ADDRESS}
 
-        pub fun main(address: Address): UFix64 {
+        fun main(address: Address): UFix64 {
           let account = getAccount(address)
           
           if let vaultRef = account.getCapability(/public/flowTokenBalance)
@@ -63,10 +63,10 @@ export const executeFlowPayment = async (amount) => {
                 let receiver = TakeFlow.createReceiver()
                 
                 // Withdraw the specified amount of FLOW from the user's vault
-                let payment <- vault.withdraw(amount: amount)
+                let payment = vault.withdraw(amount: amount)
                 
                 // Send the FLOW to the receiver
-                receiver.receiveFlow(payment: <- payment)
+                receiver.receiveFlow(payment: payment)
                 
                 log("Successfully sent FLOW")
             }
